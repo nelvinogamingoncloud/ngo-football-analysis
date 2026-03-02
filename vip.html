@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VIP Access - N.G.O Football Analysis</title>
+<style>
+body { font-family: Arial; background:#0b132b; color:white; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
+h1 { color:gold; font-size:64px; margin:20px 0; text-align:center; }
+.instructions { background: rgba(28,37,65,0.95); border:2px solid gold; padding:40px; border-radius:20px; font-size:28px; line-height:2; max-width:900px; margin-bottom:30px; text-align:left; }
+.instructions a { color:#25D366; text-decoration:none; font-weight:bold; font-size:28px; }
+.password-container { display:flex; flex-direction:column; align-items:center; }
+input[type="password"], select { padding:20px 25px; font-size:28px; border-radius:15px; margin-bottom:25px; width:400px; text-align:center; }
+button { padding:20px 40px; font-size:28px; border-radius:50px; border:none; background:gold; color:black; cursor:pointer; transition:0.2s; }
+button:hover { transform: scale(1.05); box-shadow:0 0 20px gold; }
+.error { color:red; font-size:28px; margin-top:15px; }
+.matches { display:none; margin-top:30px; width:90%; max-width:900px; }
+.match { padding:20px; margin-bottom:15px; border-radius:15px; font-size:28px; background:linear-gradient(135deg,#6a11cb,#2575fc); text-align:center; font-weight:bold; transition:0.3s; }
+
+/* pulse animation for all matches */
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); }
+  50% { box-shadow: 0 0 25px rgba(255,255,0,0.8); transform: scale(1.03); }
+  100% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); }
+}
+.pulse { animation: pulse 2s infinite; }
+
+.won { background:#2ecc71; }
+.lost { background:#e74c3c; }
+.pending { background:#808080; color:black; }
+</style>
+</head>
+
+<body>
+<h1>VIP Access</h1>
+
+<div class="instructions">
+  🇹🇿 <strong>SWAHILI:</strong><br>
+  Ili kupata VIP Access 🔥 5+ ODDS / TZS 5,000, tuma malipo kwa moja ya hizi njia:<br>
+  1️⃣ Airtel Money: 0685030690<br>
+  2️⃣ Mix by Yas: 0657030690<br>
+  3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
+  ✅ Baada ya malipo, tuma <strong>screenshot ya malipo</strong> kupitia WhatsApp ili upate password ya VIP:<br>
+  <a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a><br><br>
+
+  🇬🇧 <strong>ENGLISH:</strong><br>
+  To get VIP Access 🔥 5+ ODDS / TZS 5,000, send payment via one of these options:<br>
+  1️⃣ Airtel Money: 0685030690<br>
+  2️⃣ Mix by Yas: 0657030690<br>
+  3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
+  ✅ After payment, send a <strong>screenshot</strong> via WhatsApp to get your VIP password:<br>
+  <a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a>
+</div>
+
+<div class="password-container">
+  <input type="password" id="vipPassword" placeholder="Enter VIP Password">
+  <button onclick="checkPassword()">Submit</button>
+  <div class="error" id="errorMsg"></div>
+</div>
+
+<select id="dateSelector" style="display:none; margin-bottom:30px;"></select>
+
+<div class="matches" id="vipMatches"></div>
+
+<script>
+let todayPassword = "";
+let groupedData = {};
+
+const SHEET_ID = "16W6rDfxW5zlAibcykNPkRG1OEwYVeGhasmSapzOxyi0";
+const VIP_SHEET = "VIP";
+const PASSWORD_SHEET = "PASSWORD";
+
+// FETCH PASSWORD FOR TODAY (LOCAL DATE)
+fetch(`https://opensheet.elk.sh/${SHEET_ID}/${PASSWORD_SHEET}`)
+  .then(res => res.json())
+  .then(pwData => {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    const today = new Date(now - tzOffset).toISOString().split('T')[0];
+
+    const pwRow = pwData.find(r => r.Date === today);
+    todayPassword = pwRow ? pwRow.Password : "default";
+  })
+  .catch(err => console.error("Failed to load VIP password", err));
+
+function checkPassword() {
+  const input = document.getElementById("vipPassword").value.trim();
+  const errorMsg = document.getElementById("errorMsg");
+  const vipMatches = document.getElementById("vipMatches");
+  const dateSelector = document.getElementById("dateSelector");
+
+  if(input === todayPassword){
+    errorMsg.textContent = "";
+    document.querySelector(".password-container").style.display = "none";
+    document.querySelector(".instructions").style.display = "none";
+    dateSelector.style.display = "block";
+
+    fetch(`https://opensheet.elk.sh/${SHEET_ID}/${VIP_SHEET}`)
+      .then(res => res.json())
+      .then(data => {
+        groupedData = {};
+        data.forEach(row => {
+          if(!row.Date) return;
+          if(!groupedData[row.Date]) groupedData[row.Date] = [];
+          groupedData[row.Date].push(row);
+        });
+
+        const dates = Object.keys(groupedData).sort().reverse();
+
+        dates.forEach(d => {
+          const option = document.createElement("option");
+          option.value = d;
+          option.textContent = d;
+          dateSelector.appendChild(option);
+        });
+
+        showMatches(dates[0]);
+        dateSelector.value = dates[0];
+      })
+      .catch(err => {
+        vipMatches.innerHTML = "Failed to load VIP predictions";
+        console.error(err);
+      });
+
+  } else {
+    errorMsg.textContent = "Password si sahihi / Incorrect password!";
+  }
+}
+
+document.getElementById("dateSelector").addEventListener("change", function(){
+  showMatches(this.value);
+});
+
+function showMatches(date){
+  const vipMatches = document.getElementById("vipMatches");
+  vipMatches.innerHTML = "";
+  vipMatches.style.display = "block";
+
+  if(groupedData[date]){
+    groupedData[date].forEach((r) => {
+      const div = document.createElement("div");
+      let statusClass = "";
+      if(r.Status && r.Status.toUpperCase() === "WON") statusClass="won";
+      else if(r.Status && r.Status.toUpperCase() === "LOST") statusClass="lost";
+      else if(r.Status && r.Status.toUpperCase() === "PENDING") statusClass="pending";
+
+      div.className = "match " + statusClass + " pulse";
+      div.innerHTML = `${r.Time} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
+      vipMatches.appendChild(div);
+    });
+  }
+}
+
+// AUTO REFRESH EVERY 5 MINUTES
+setInterval(function(){
+  location.reload();
+}, 300000);
+</script>
+
+</body>
+</html>
