@@ -11,6 +11,19 @@ body {
     margin:0;
     padding:0;
 }
+
+/* LOADING */
+#ngoLoading{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:120px;
+    color:#ffbe0b;
+    font-weight:bold;
+    z-index:99999;
+}
+
 .top-bar {
     display:flex;
     justify-content:space-between;
@@ -42,7 +55,6 @@ body {
     font-size:40px;
     text-align:center;
 }
-
 .matches {
     display:none;
     margin:0 20px 30px 20px;
@@ -50,7 +62,6 @@ body {
     border-radius:12px;
     padding:20px;
 }
-
 .match {
     margin:10px 0;
     padding:24px;
@@ -62,7 +73,6 @@ body {
     align-items:center;
     text-align:center;
 }
-
 .won { background:#2ecc71; }
 .lost { background:#e74c3c; }
 .pending { background:#808080; }
@@ -78,6 +88,7 @@ body {
     margin-top:12px;
 }
 
+/* FLOATS */
 .floating-left {
     position:fixed;
     bottom:20px;
@@ -87,21 +98,19 @@ body {
     gap:10px;
     z-index:9999;
 }
-.floating-left a, .floating-left button {
+.floating-left a {
     text-decoration:none;
     padding:14px 18px;
     border-radius:50px;
     color:white;
     font-size:20px;
     font-weight:bold;
-    border:none;
-    cursor:pointer;
 }
 .whatsapp-btn { background:#25D366; }
 .telegram-btn { background:#0088cc; }
 .email-btn { background:#ff9800; }
 .about-btn { background:#ffbe0b; color:black; }
-.support-float { background:#ff9800; color:white; font-size:22px; font-weight:bold; padding:14px 20px; border-radius:50px; }
+.support-float { background:#ff9800; }
 
 .floating-right {
     position:fixed;
@@ -111,18 +120,18 @@ body {
     flex-direction:column;
     gap:10px;
     z-index:9999;
-    align-items: center; /* Center buttons */
+    align-items:center;
 }
 .vip-float {
     background:#FFD700;
     color:black;
-    font-size:20px;           /* pulse kidogo */
+    font-size:20px;
     font-weight:bold;
     padding:16px 25px;
     border-radius:50px;
     text-decoration:none;
     animation:pulse 1.5s infinite;
-    box-shadow:0 0 15px #00ff00; /* kivuli kijani */
+    box-shadow:0 0 15px #00ff00;
 }
 .privacy-btn {
     background:#ffbe0b;
@@ -130,8 +139,8 @@ body {
     padding:14px 18px;
     border-radius:50px;
     font-size:20px;
-    text-align:center; /* center text */
-    width:200px;      /* size box */
+    text-align:center;
+    width:200px;
 }
 
 @keyframes pulse {
@@ -140,35 +149,7 @@ body {
     100% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
 }
 
-.popup {
-    display:none;
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:#0b132b;
-    padding:30px;
-    border-radius:20px;
-    max-width:900px;
-    max-height:90vh;
-    overflow:auto;
-    z-index:10000;
-}
-.popup h1{color:#ffbe0b;}
-.popup-close{
-    position:absolute;
-    top:10px;
-    right:15px;
-    background:red;
-    color:white;
-    border:none;
-    font-size:22px;
-    border-radius:50%;
-    width:45px;
-    height:45px;
-    cursor:pointer
-}
-
+/* VIDEO POPUP */
 #videoPopup{
     display:none;
     position:fixed;
@@ -206,11 +187,16 @@ body {
 }
 </style>
 </head>
+
 <body>
+
+<div id="ngoLoading">N.G.O Loading...</div>
+
 <div class="top-bar">
     <div>Follow, N.G.O Football Analysis</div>
     <div>V.I.P Tips, Available</div>
 </div>
+
 <div class="header">
     <h1>N.G.O Football Analysis</h1>
     <h2>📅 Predictions by Date</h2>
@@ -219,7 +205,6 @@ body {
 
 <div id="content"></div>
 
-<!-- Floating buttons -->
 <div class="floating-left">
     <a href="https://wa.me/255657030690" target="_blank" class="whatsapp-btn">💬 WhatsApp</a>
     <a href="https://t.me/NGOBettingTipsFree" target="_blank" class="telegram-btn">📢 Telegram</a>
@@ -233,19 +218,6 @@ body {
     <a href="privacy.html" class="privacy-btn">Privacy Policy</a>
 </div>
 
-<!-- Popups -->
-<div id="aboutPopup" class="popup">
-    <button class="popup-close" onclick="closePopup('about')">×</button>
-    <h1>About Us</h1>
-    <p>We use N.G.O Formulas based on detailed football statistics.</p>
-</div>
-
-<div id="privacyPopup" class="popup">
-    <button class="popup-close" onclick="closePopup('privacy')">×</button>
-    <h1>Privacy Policy</h1>
-    <p>Your data is safe with us.</p>
-</div>
-
 <div id="videoPopup">
     <div id="videoPopupContent">
         <button class="video-close-big" onclick="closeVideo()">×</button>
@@ -254,13 +226,30 @@ body {
 </div>
 
 <script>
-const SHEET_ID="16W6rDfxW5zlAibcykNPkRG1OEwYVeGhasmSapzOxyi0";
-const SHEET_NAME="FREE";
-const URL=`https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
+const URL="https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
 
-fetch(URL).then(r=>r.json()).then(data=>{
+function formatDate(iso){
+    const d = new Date(iso);
+    const day = String(d.getDate()).padStart(2,'0');
+    const month = String(d.getMonth()+1).padStart(2,'0');
+    const year = String(d.getFullYear());
+    return `${day}-${month}-${year}`;
+}
+
+function formatTime(timeString){
+    const t = new Date(timeString);
+    const hours = String(t.getHours()).padStart(2,'0');
+    const minutes = String(t.getMinutes()).padStart(2,'0');
+    return `${hours}:${minutes}`;
+}
+
+fetch(URL)
+.then(r=>r.json())
+.then(data=>{
+    document.getElementById("ngoLoading").style.display="none";
+
     const grouped={};
-    data.forEach(row=>{
+    data.FREE.forEach(row=>{
         if(!row.Date) return;
         if(!grouped[row.Date]) grouped[row.Date]=[];
         grouped[row.Date].push(row);
@@ -270,9 +259,9 @@ fetch(URL).then(r=>r.json()).then(data=>{
     Object.keys(grouped).reverse().forEach((date,i)=>{
         const d=document.createElement("div");
         d.className="date";
-        d.textContent=date;
+        d.textContent=formatDate(date);
         d.onclick=()=>{const m=document.getElementById("m"+i); m.style.display=m.style.display==="block"?"none":"block";};
-        
+
         const matches=document.createElement("div");
         matches.className="matches";
         matches.id="m"+i;
@@ -281,8 +270,7 @@ fetch(URL).then(r=>r.json()).then(data=>{
             const div=document.createElement("div");
             let statusClass=r.Status==="WON"?"won":r.Status==="LOST"?"lost":"pending";
             div.className="match "+statusClass;
-
-            div.innerHTML=`${r.Time} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
+            div.innerHTML=`${formatTime(r.Time)} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
 
             if(r.Highlight){
                 const h=document.createElement("div");
@@ -309,15 +297,14 @@ function openHighlight(url){
     document.getElementById("videoFrame").src="https://www.youtube.com/embed/"+id+"?autoplay=1";
     document.getElementById("videoPopup").style.display="block";
 }
-function closeVideo(){ document.getElementById("videoFrame").src=""; document.getElementById("videoPopup").style.display="none"; }
-
-function openPopup(t){document.getElementById(t+"Popup").style.display="block";}
-function closePopup(t){document.getElementById(t+"Popup").style.display="none";}
+function closeVideo(){
+    document.getElementById("videoFrame").src="";
+    document.getElementById("videoPopup").style.display="none";
+}
 
 /* DRAG VIDEO */
 let dragItem=document.getElementById("videoPopupContent");
 let active=false,currentX,currentY,initialX,initialY,xOffset=0,yOffset=0;
-
 dragItem.addEventListener("touchstart",dragStart);
 dragItem.addEventListener("touchend",dragEnd);
 dragItem.addEventListener("touchmove",drag);
@@ -330,7 +317,7 @@ function dragStart(e){
     initialY=(e.touches?e.touches[0].clientY:e.clientY)-yOffset;
     active=true;
 }
-function dragEnd(e){
+function dragEnd(){
     initialX=currentX;
     initialY=currentY;
     active=false;
