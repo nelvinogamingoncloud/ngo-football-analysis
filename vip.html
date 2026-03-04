@@ -13,147 +13,152 @@ input[type="password"], select { padding:20px 25px; font-size:28px; border-radiu
 button { padding:20px 40px; font-size:28px; border-radius:50px; border:none; background:gold; color:black; cursor:pointer; transition:0.2s; }
 button:hover { transform: scale(1.05); box-shadow:0 0 20px gold; }
 .error { color:red; font-size:28px; margin-top:15px; }
-.matches { display:none; margin-top:30px; width:90%; max-width:900px; }
-.match { padding:20px; margin-bottom:15px; border-radius:15px; font-size:28px; background:linear-gradient(135deg,#6a11cb,#2575fc); text-align:center; font-weight:bold; transition:0.3s; }
-
-/* pulse animation for all matches */
-@keyframes pulse {
-  0% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); }
-  50% { box-shadow: 0 0 25px rgba(255,255,0,0.8); transform: scale(1.03); }
-  100% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); }
-}
+.date { background:#1c2541; margin:20px 0 10px 0; padding:20px; font-size:32px; text-align:center; border-radius:12px; cursor:pointer; }
+.matches-container { width:90%; max-width:900px; }
+.match { padding:20px; margin-bottom:15px; border-radius:15px; font-size:28px; background:linear-gradient(135deg,#6a11cb,#2575fc); text-align:center; font-weight:bold; }
 .pulse { animation: pulse 2s infinite; }
-
+@keyframes pulse { 0% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(255,255,0,0.8); transform: scale(1.03); } 100% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); } }
 .won { background:#2ecc71; }
 .lost { background:#e74c3c; }
 .pending { background:#808080; color:black; }
+#ngoLoading { position:fixed; bottom:0.5em; left:0.5em; font-size:50px; color:#ffbe0b; font-weight:bold; z-index:99999; }
 </style>
 </head>
-
 <body>
+
+<div id="ngoLoading">N.G.O Loading...</div>
+
 <h1>VIP Access</h1>
 
 <div class="instructions">
-  🇹🇿 <strong>SWAHILI:</strong><br>
-  Ili kupata VIP Access 🔥 5+ ODDS / TZS 5,000, tuma malipo kwa moja ya hizi njia:<br>
-  1️⃣ Airtel Money: 0685030690<br>
-  2️⃣ Mix by Yas: 0657030690<br>
-  3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
-  ✅ Baada ya malipo, tuma <strong>screenshot ya malipo</strong> kupitia WhatsApp ili upate password ya VIP:<br>
-  <a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a><br><br>
+🇹🇿 <strong>SWAHILI:</strong><br>
+Ili kupata VIP Access 🔥 5+ ODDS / TZS 5,000, tuma malipo kwa moja ya hizi njia:<br>
+1️⃣ Airtel Money: 0685030690<br>
+2️⃣ Mix by Yas: 0657030690<br>
+3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
+✅ Baada ya malipo, tuma <strong>screenshot ya malipo</strong> kupitia WhatsApp ili upate password ya VIP:<br>
+<a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a><br><br>
 
-  🇬🇧 <strong>ENGLISH:</strong><br>
-  To get VIP Access 🔥 5+ ODDS / TZS 5,000, send payment via one of these options:<br>
-  1️⃣ Airtel Money: 0685030690<br>
-  2️⃣ Mix by Yas: 0657030690<br>
-  3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
-  ✅ After payment, send a <strong>screenshot</strong> via WhatsApp to get your VIP password:<br>
-  <a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a>
+🇬🇧 <strong>ENGLISH:</strong><br>
+To get VIP Access 🔥 5+ ODDS / TZS 5,000, send payment via one of these options:<br>
+1️⃣ Airtel Money: 0685030690<br>
+2️⃣ Mix by Yas: 0657030690<br>
+3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
+✅ After payment, send a <strong>screenshot</strong> via WhatsApp to get your VIP password:<br>
+<a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a>
 </div>
 
 <div class="password-container">
-  <input type="password" id="vipPassword" placeholder="Enter VIP Password">
-  <button onclick="checkPassword()">Submit</button>
-  <div class="error" id="errorMsg"></div>
+<input type="password" id="vipPassword" placeholder="Enter VIP Password">
+<button onclick="checkPassword()">Submit</button>
+<div class="error" id="errorMsg"></div>
 </div>
 
 <select id="dateSelector" style="display:none; margin-bottom:30px;"></select>
-
-<div class="matches" id="vipMatches"></div>
+<div id="vipContainer" class="matches-container"></div>
 
 <script>
-let todayPassword = "";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
 let groupedData = {};
+let todayPassword = "";
 
-const SHEET_ID = "16W6rDfxW5zlAibcykNPkRG1OEwYVeGhasmSapzOxyi0";
-const VIP_SHEET = "VIP";
-const PASSWORD_SHEET = "PASSWORD";
-
-// FETCH PASSWORD FOR TODAY (LOCAL DATE)
-fetch(`https://opensheet.elk.sh/${SHEET_ID}/${PASSWORD_SHEET}`)
-  .then(res => res.json())
-  .then(pwData => {
-    const now = new Date();
-    const tzOffset = now.getTimezoneOffset() * 60000;
-    const today = new Date(now - tzOffset).toISOString().split('T')[0];
-
-    const pwRow = pwData.find(r => r.Date === today);
-    todayPassword = pwRow ? pwRow.Password : "default";
-  })
-  .catch(err => console.error("Failed to load VIP password", err));
-
-function checkPassword() {
-  const input = document.getElementById("vipPassword").value.trim();
-  const errorMsg = document.getElementById("errorMsg");
-  const vipMatches = document.getElementById("vipMatches");
-  const dateSelector = document.getElementById("dateSelector");
-
-  if(input === todayPassword){
-    errorMsg.textContent = "";
-    document.querySelector(".password-container").style.display = "none";
-    document.querySelector(".instructions").style.display = "none";
-    dateSelector.style.display = "block";
-
-    fetch(`https://opensheet.elk.sh/${SHEET_ID}/${VIP_SHEET}`)
-      .then(res => res.json())
-      .then(data => {
-        groupedData = {};
-        data.forEach(row => {
-          if(!row.Date) return;
-          if(!groupedData[row.Date]) groupedData[row.Date] = [];
-          groupedData[row.Date].push(row);
-        });
-
-        const dates = Object.keys(groupedData).sort().reverse();
-
-        dates.forEach(d => {
-          const option = document.createElement("option");
-          option.value = d;
-          option.textContent = d;
-          dateSelector.appendChild(option);
-        });
-
-        showMatches(dates[0]);
-        dateSelector.value = dates[0];
-      })
-      .catch(err => {
-        vipMatches.innerHTML = "Failed to load VIP predictions";
-        console.error(err);
-      });
-
-  } else {
-    errorMsg.textContent = "Password si sahihi / Incorrect password!";
-  }
+// FORMAT FUNCTIONS
+function formatTime(iso){
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return "";
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+function formatDate(iso){
+    const d = new Date(iso);
+    if(isNaN(d.getTime())) return iso;
+    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
 }
 
-document.getElementById("dateSelector").addEventListener("change", function(){
-  showMatches(this.value);
+// 🔹 SHOW N.G.O Loading for 7 seconds
+window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+        document.getElementById("ngoLoading").style.display="none";
+    }, 7000);
 });
 
-function showMatches(date){
-  const vipMatches = document.getElementById("vipMatches");
-  vipMatches.innerHTML = "";
-  vipMatches.style.display = "block";
+// FETCH VIP DATA + PASSWORD
+fetch(WEB_APP_URL)
+.then(res => res.json())
+.then(data => {
+    if(data.PASSWORD && data.PASSWORD.length > 0){
+        const todayISO = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Dar_es_Salaam" });
+        const pwRow = data.PASSWORD.find(r => r.Date === todayISO);
+        todayPassword = pwRow ? pwRow.Password : "";
+    }
 
-  if(groupedData[date]){
-    groupedData[date].forEach((r) => {
-      const div = document.createElement("div");
-      let statusClass = "";
-      if(r.Status && r.Status.toUpperCase() === "WON") statusClass="won";
-      else if(r.Status && r.Status.toUpperCase() === "LOST") statusClass="lost";
-      else if(r.Status && r.Status.toUpperCase() === "PENDING") statusClass="pending";
+    if(data.VIP){
+        data.VIP.forEach(r=>{
+            if(!groupedData[r.Date]) groupedData[r.Date]=[];
+            groupedData[r.Date].push(r);
+        });
+    }
+})
+.catch(err => console.error("Failed to load Web App data", err));
 
-      div.className = "match " + statusClass + " pulse";
-      div.innerHTML = `${r.Time} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
-      vipMatches.appendChild(div);
+// CHECK PASSWORD
+function checkPassword(){
+    const input = document.getElementById("vipPassword").value.trim();
+    const error = document.getElementById("errorMsg");
+    const vipContainer = document.getElementById("vipContainer");
+    const dateSelector = document.getElementById("dateSelector");
+
+    if(input !== todayPassword){
+        error.textContent="Password si sahihi / Incorrect password!";
+        return;
+    }
+
+    error.textContent="";
+    document.querySelector(".password-container").style.display="none";
+    document.querySelector(".instructions").style.display="none";
+    vipContainer.innerHTML="";
+    dateSelector.style.display="block";
+
+    const dates = Object.keys(groupedData).sort().reverse();
+    dates.forEach(d=>{
+        const option = document.createElement("option");
+        option.value = d;
+        option.textContent = formatDate(d);
+        dateSelector.appendChild(option);
     });
-  }
+    showMatches(dates[0]);
+    dateSelector.value = dates[0];
+}
+
+// DATE SELECTOR CHANGE
+document.getElementById("dateSelector").addEventListener("change", function(){
+    showMatches(this.value);
+});
+
+// SHOW MATCHES
+function showMatches(date){
+    const vipContainer = document.getElementById("vipContainer");
+    vipContainer.innerHTML="";
+
+    if(groupedData[date]){
+        groupedData[date].forEach(r=>{
+            const div = document.createElement("div");
+            let statusClass="";
+            if(r.Status && r.Status.toUpperCase()==="WON") statusClass="won";
+            else if(r.Status && r.Status.toUpperCase()==="LOST") statusClass="lost";
+            else statusClass="pending";
+
+            div.className="match "+statusClass+" pulse";
+
+            const timeStr = formatTime(r.Time);
+            const highlightLink = r.Highlight ? `<br><a href="${r.Highlight}" target="_blank" style="color:#ff0; text-decoration:underline;">Watch Highlight</a>` : "";
+            div.innerHTML = `${timeStr} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}${highlightLink}`;
+            vipContainer.appendChild(div);
+        });
+    }
 }
 
 // AUTO REFRESH EVERY 5 MINUTES
-setInterval(function(){
-  location.reload();
-}, 300000);
+setInterval(()=>location.reload(),300000);
 </script>
 
 </body>
