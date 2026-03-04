@@ -2,163 +2,336 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>VIP Access - N.G.O Football Analysis</title>
+<title>N.G.O Football Analysis</title>
 <style>
-body { font-family: Arial; background:#0b132b; color:white; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
-h1 { color:gold; font-size:64px; margin:20px 0; text-align:center; }
-.instructions { background: rgba(28,37,65,0.95); border:2px solid gold; padding:40px; border-radius:20px; font-size:28px; line-height:2; max-width:900px; margin-bottom:30px; text-align:left; }
-.instructions a { color:#25D366; text-decoration:none; font-weight:bold; font-size:28px; }
-.password-container { display:flex; flex-direction:column; align-items:center; }
-input[type="password"], select { padding:20px 25px; font-size:28px; border-radius:15px; margin-bottom:25px; width:400px; text-align:center; }
-button { padding:20px 40px; font-size:28px; border-radius:50px; border:none; background:gold; color:black; cursor:pointer; transition:0.2s; }
-button:hover { transform: scale(1.05); box-shadow:0 0 20px gold; }
-.error { color:red; font-size:28px; margin-top:15px; }
-.date { background:#1c2541; margin:20px 0 10px 0; padding:20px; font-size:32px; text-align:center; border-radius:12px; cursor:pointer; }
-.matches-container { width:90%; max-width:900px; }
-.match { padding:20px; margin-bottom:15px; border-radius:15px; font-size:28px; background:linear-gradient(135deg,#6a11cb,#2575fc); text-align:center; font-weight:bold; }
-.pulse { animation: pulse 2s infinite; }
-@keyframes pulse { 0% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(255,255,0,0.8); transform: scale(1.03); } 100% { box-shadow: 0 0 5px rgba(255,255,0,0.2); transform: scale(1); } }
+body {
+    font-family: Arial, sans-serif;
+    background:#0b132b;
+    color:white;
+    margin:0;
+    padding:0;
+}
+
+/* LOADING */
+#ngoLoading{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:120px;
+    color:#ffbe0b;
+    font-weight:bold;
+    z-index:99999;
+}
+
+.top-bar {
+    display:flex;
+    justify-content:space-between;
+    padding:5px 20px;
+    font-size:28px;
+    color:#ffbe0b;
+    background:#1c2541;
+}
+.header {
+    position:sticky;
+    top:0;
+    background:#0b132b;
+    z-index:100;
+    text-align:center;
+    padding:30px 10px;
+    border-bottom:2px solid #ffbe0b;
+    box-shadow:0 2px 5px rgba(0,0,0,0.5);
+}
+.header h1 { color:#ffbe0b; font-size:68px; margin:0; }
+.header h2 { color:#ffffff; font-weight:normal; font-size:40px; margin:10px 0 0 0; }
+.header h3 { color:#ffffff; font-weight:normal; font-size:30px; margin:5px 0 0 0; }
+
+.date {
+    background:#1c2541;
+    margin:20px;
+    padding:24px;
+    cursor:pointer;
+    border-radius:5px;
+    font-size:40px;
+    text-align:center;
+}
+.matches {
+    display:none;
+    margin:0 20px 30px 20px;
+    background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
+    border-radius:12px;
+    padding:20px;
+}
+.match {
+    margin:10px 0;
+    padding:24px;
+    border-radius:8px;
+    font-size:36px;
+    font-weight:bold;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+}
 .won { background:#2ecc71; }
 .lost { background:#e74c3c; }
-.pending { background:#808080; color:black; }
-#ngoLoading { position:fixed; bottom:0.5em; left:0.5em; font-size:50px; color:#ffbe0b; font-weight:bold; z-index:99999; }
+.pending { background:#808080; }
+
+.highlight-link{
+    display:inline-block;
+    padding:10px 18px;
+    border-radius:12px;
+    background:#ffbe0b;
+    color:black;
+    font-size:24px;
+    cursor:pointer;
+    margin-top:12px;
+}
+
+/* FLOATS */
+.floating-left {
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:9999;
+}
+.floating-left a {
+    text-decoration:none;
+    padding:14px 18px;
+    border-radius:50px;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+}
+.whatsapp-btn { background:#25D366; }
+.telegram-btn { background:#0088cc; }
+.email-btn { background:#ff9800; }
+.about-btn { background:#ffbe0b; color:black; }
+.support-float { background:#ff9800; }
+
+.floating-right {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:9999;
+    align-items:center;
+}
+.vip-float {
+    background:#FFD700;
+    color:black;
+    font-size:20px;
+    font-weight:bold;
+    padding:16px 25px;
+    border-radius:50px;
+    text-decoration:none;
+    animation:pulse 1.5s infinite;
+    box-shadow:0 0 15px #00ff00;
+}
+.privacy-btn {
+    background:#ffbe0b;
+    color:black;
+    padding:14px 18px;
+    border-radius:50px;
+    font-size:20px;
+    text-align:center;
+    width:200px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
+    70% { transform: scale(1.08); box-shadow: 0 0 20px #00ff00; }
+    100% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
+}
+
+/* VIDEO POPUP */
+#videoPopup{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:transparent;
+    z-index:20000;
+    pointer-events:none;
+}
+#videoPopupContent{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:90%;
+    max-width:900px;
+    cursor:move;
+    pointer-events:auto;
+}
+#videoFrame{width:100%;height:500px;border:none;}
+.video-close-big{
+    position:absolute;
+    top:-20px;
+    right:-20px;
+    background:red;
+    color:white;
+    border:none;
+    font-size:40px;
+    border-radius:50%;
+    width:60px;
+    height:60px;
+    cursor:pointer;
+}
 </style>
 </head>
+
 <body>
 
 <div id="ngoLoading">N.G.O Loading...</div>
 
-<h1>VIP Access</h1>
-
-<div class="instructions">
-🇹🇿 <strong>SWAHILI:</strong><br>
-Ili kupata VIP Access 🔥 5+ ODDS / TZS 5,000, tuma malipo kwa moja ya hizi njia:<br>
-1️⃣ Airtel Money: 0685030690<br>
-2️⃣ Mix by Yas: 0657030690<br>
-3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
-✅ Baada ya malipo, tuma <strong>screenshot ya malipo</strong> kupitia WhatsApp ili upate password ya VIP:<br>
-<a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a><br><br>
-
-🇬🇧 <strong>ENGLISH:</strong><br>
-To get VIP Access 🔥 5+ ODDS / TZS 5,000, send payment via one of these options:<br>
-1️⃣ Airtel Money: 0685030690<br>
-2️⃣ Mix by Yas: 0657030690<br>
-3️⃣ Bank Account: 10198927417, CRDB Bank<br><br>
-✅ After payment, send a <strong>screenshot</strong> via WhatsApp to get your VIP password:<br>
-<a href="https://wa.me/255657030690" target="_blank">https://wa.me/255657030690</a>
+<div class="top-bar">
+    <div>Follow, N.G.O Football Analysis</div>
+    <div>V.I.P Tips, Available</div>
 </div>
 
-<div class="password-container">
-<input type="password" id="vipPassword" placeholder="Enter VIP Password">
-<button onclick="checkPassword()">Submit</button>
-<div class="error" id="errorMsg"></div>
+<div class="header">
+    <h1>N.G.O Football Analysis</h1>
+    <h2>📅 Predictions by Date</h2>
+    <h3>Choose the date to view Prediction or History</h3>
 </div>
 
-<select id="dateSelector" style="display:none; margin-bottom:30px;"></select>
-<div id="vipContainer" class="matches-container"></div>
+<div id="content"></div>
+
+<div class="floating-left">
+    <a href="https://wa.me/255657030690" target="_blank" class="whatsapp-btn">💬 WhatsApp</a>
+    <a href="https://t.me/NGOBettingTipsFree" target="_blank" class="telegram-btn">📢 Telegram</a>
+    <a href="mailto:nelvinbollendully@gmail.com" class="email-btn">✉ Email</a>
+    <a href="about.html" class="about-btn">About Us</a>
+    <a href="support.html" class="support-float">❤️ Support</a>
+</div>
+
+<div class="floating-right">
+    <a href="vip.html" class="vip-float">VIP ACCESS 🔥 5+ ODDS / TZS 5,000</a>
+    <a href="privacy.html" class="privacy-btn">Privacy Policy</a>
+</div>
+
+<div id="videoPopup">
+    <div id="videoPopupContent">
+        <button class="video-close-big" onclick="closeVideo()">×</button>
+        <iframe id="videoFrame" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    </div>
+</div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
-let groupedData = {};
-let todayPassword = "";
+const URL="https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
 
-// FORMAT FUNCTIONS
-function formatTime(iso){
-    const d = new Date(iso);
-    if(isNaN(d.getTime())) return "";
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-}
 function formatDate(iso){
     const d = new Date(iso);
-    if(isNaN(d.getTime())) return iso;
-    return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+    const day = String(d.getDate()).padStart(2,'0');
+    const month = String(d.getMonth()+1).padStart(2,'0');
+    const year = String(d.getFullYear());
+    return `${day}-${month}-${year}`;
 }
 
-// 🔹 SHOW N.G.O Loading for 7 seconds
-window.addEventListener('load', ()=>{
-    setTimeout(()=>{
-        document.getElementById("ngoLoading").style.display="none";
-    }, 7000);
-});
+function formatTime(timeString){
+    const t = new Date(timeString);
+    const hours = String(t.getHours()).padStart(2,'0');
+    const minutes = String(t.getMinutes()).padStart(2,'0');
+    return `${hours}:${minutes}`;
+}
 
-// FETCH VIP DATA + PASSWORD
-fetch(WEB_APP_URL)
-.then(res => res.json())
-.then(data => {
-    if(data.PASSWORD && data.PASSWORD.length > 0){
-        const todayISO = new Date().toLocaleDateString("en-CA", { timeZone: "Africa/Dar_es_Salaam" });
-        const pwRow = data.PASSWORD.find(r => r.Date === todayISO);
-        todayPassword = pwRow ? pwRow.Password : "";
-    }
+fetch(URL)
+.then(r=>r.json())
+.then(data=>{
+    document.getElementById("ngoLoading").style.display="none";
 
-    if(data.VIP){
-        data.VIP.forEach(r=>{
-            if(!groupedData[r.Date]) groupedData[r.Date]=[];
-            groupedData[r.Date].push(r);
-        });
-    }
-})
-.catch(err => console.error("Failed to load Web App data", err));
-
-// CHECK PASSWORD
-function checkPassword(){
-    const input = document.getElementById("vipPassword").value.trim();
-    const error = document.getElementById("errorMsg");
-    const vipContainer = document.getElementById("vipContainer");
-    const dateSelector = document.getElementById("dateSelector");
-
-    if(input !== todayPassword){
-        error.textContent="Password si sahihi / Incorrect password!";
-        return;
-    }
-
-    error.textContent="";
-    document.querySelector(".password-container").style.display="none";
-    document.querySelector(".instructions").style.display="none";
-    vipContainer.innerHTML="";
-    dateSelector.style.display="block";
-
-    const dates = Object.keys(groupedData).sort().reverse();
-    dates.forEach(d=>{
-        const option = document.createElement("option");
-        option.value = d;
-        option.textContent = formatDate(d);
-        dateSelector.appendChild(option);
+    const grouped={};
+    data.FREE.forEach(row=>{
+        if(!row.Date) return;
+        if(!grouped[row.Date]) grouped[row.Date]=[];
+        grouped[row.Date].push(row);
     });
-    showMatches(dates[0]);
-    dateSelector.value = dates[0];
-}
 
-// DATE SELECTOR CHANGE
-document.getElementById("dateSelector").addEventListener("change", function(){
-    showMatches(this.value);
+    const container=document.getElementById("content");
+    Object.keys(grouped).reverse().forEach((date,i)=>{
+        const d=document.createElement("div");
+        d.className="date";
+        d.textContent=formatDate(date);
+        d.onclick=()=>{const m=document.getElementById("m"+i); m.style.display=m.style.display==="block"?"none":"block";};
+
+        const matches=document.createElement("div");
+        matches.className="matches";
+        matches.id="m"+i;
+
+        grouped[date].forEach(r=>{
+            const div=document.createElement("div");
+            let statusClass=r.Status==="WON"?"won":r.Status==="LOST"?"lost":"pending";
+            div.className="match "+statusClass;
+            div.innerHTML=`${formatTime(r.Time)} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
+
+            if(r.Highlight){
+                const h=document.createElement("div");
+                h.className="highlight-link";
+                h.innerHTML="⏯ MATCH HIGHLIGHT";
+                h.onclick=()=>openHighlight(r.Highlight);
+                div.appendChild(h);
+            }
+
+            matches.appendChild(div);
+        });
+
+        container.appendChild(d);
+        container.appendChild(matches);
+    });
 });
 
-// SHOW MATCHES
-function showMatches(date){
-    const vipContainer = document.getElementById("vipContainer");
-    vipContainer.innerHTML="";
-
-    if(groupedData[date]){
-        groupedData[date].forEach(r=>{
-            const div = document.createElement("div");
-            let statusClass="";
-            if(r.Status && r.Status.toUpperCase()==="WON") statusClass="won";
-            else if(r.Status && r.Status.toUpperCase()==="LOST") statusClass="lost";
-            else statusClass="pending";
-
-            div.className="match "+statusClass+" pulse";
-
-            const timeStr = formatTime(r.Time);
-            const highlightLink = r.Highlight ? `<br><a href="${r.Highlight}" target="_blank" style="color:#ff0; text-decoration:underline;">Watch Highlight</a>` : "";
-            div.innerHTML = `${timeStr} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}${highlightLink}`;
-            vipContainer.appendChild(div);
-        });
-    }
+function openHighlight(url){
+    let id="";
+    if(url.includes("youtu.be/")) id=url.split("youtu.be/")[1].split(/[?&]/)[0];
+    else if(url.includes("shorts/")) id=url.split("shorts/")[1].split(/[?&]/)[0];
+    else if(url.includes("watch?v=")) id=url.split("v=")[1].split("&")[0];
+    else if(url.includes("embed/")) id=url.split("embed/")[1].split(/[?&]/)[0];
+    document.getElementById("videoFrame").src="https://www.youtube.com/embed/"+id+"?autoplay=1";
+    document.getElementById("videoPopup").style.display="block";
+}
+function closeVideo(){
+    document.getElementById("videoFrame").src="";
+    document.getElementById("videoPopup").style.display="none";
 }
 
-// AUTO REFRESH EVERY 5 MINUTES
-setInterval(()=>location.reload(),300000);
+/* DRAG VIDEO */
+let dragItem=document.getElementById("videoPopupContent");
+let active=false,currentX,currentY,initialX,initialY,xOffset=0,yOffset=0;
+dragItem.addEventListener("touchstart",dragStart);
+dragItem.addEventListener("touchend",dragEnd);
+dragItem.addEventListener("touchmove",drag);
+dragItem.addEventListener("mousedown",dragStart);
+dragItem.addEventListener("mouseup",dragEnd);
+dragItem.addEventListener("mousemove",drag);
+
+function dragStart(e){
+    initialX=(e.touches?e.touches[0].clientX:e.clientX)-xOffset;
+    initialY=(e.touches?e.touches[0].clientY:e.clientY)-yOffset;
+    active=true;
+}
+function dragEnd(){
+    initialX=currentX;
+    initialY=currentY;
+    active=false;
+}
+function drag(e){
+    if(active){
+        e.preventDefault();
+        currentX=(e.touches?e.touches[0].clientX:e.clientX)-initialX;
+        currentY=(e.touches?e.touches[0].clientY:e.clientY)-initialY;
+        xOffset=currentX;
+        yOffset=currentY;
+        dragItem.style.transform="translate("+currentX+"px,"+currentY+"px)";
+    }
+}
 </script>
 
 </body>
