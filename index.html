@@ -1,260 +1,297 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>N.G.O Football Analysis</title>
-<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WW3ELYEPX0"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-WW3ELYEPX0');
-</script>
+    <meta charset="UTF-8">
+    <title>N.G.O Football Analysis</title>
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WW3ELYEPX0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-WW3ELYEPX0');
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#0b132b;
+            color:white;
+            margin:0;
+            padding:0;
+        }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background:#0b132b;
-    color:white;
-    margin:0;
-    padding:0;
-}
-/* ===== SPLASH STYLES ===== */
-#offlineContainer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: #0B0C3E;
-    color: #FFD700;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    z-index: 100000;
-    transition: opacity 0.5s ease;
-}
-#offlineContainer.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-#offlineContainer h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-}
-#offlineContainer p {
-    font-size: 1.2em;
-    margin-bottom: 30px;
-}
-#offlineContainer button {
-    padding: 12px 30px;
-    font-size: 1.2em;
-    font-weight: bold;
-    background: #FFD700;
-    border: none;
-    border-radius: 8px;
-    color: #0B0C3E;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-    display: none;
-}
-#offlineContainer button:hover {
-    background: #B8860B;
-    color: #fff;
-}
-/* HAPA HAPA ZAIDI ZA INDEX ZAKO ... */
-</style>
-/* LOADING */
-#ngoLoading{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    font-size:120px;
-    color:#ffbe0b;
-    font-weight:bold;
-    z-index:99999;
-}
+        /* ===== SPLASH STYLES ===== */
+        #offlineContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0B0C3E;
+            color: #FFD700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 100000;
+            transition: opacity 0.5s ease;
+        }
 
-.top-bar {
-    display:flex;
-    justify-content:space-between;
-    padding:5px 20px;
-    font-size:28px;
-    color:#ffbe0b;
-    background:#1c2541;
-}
-.header {
-    position:sticky;
-    top:0;
-    background:#0b132b;
-    z-index:100;
-    text-align:center;
-    padding:30px 10px;
-    border-bottom:2px solid #ffbe0b;
-    box-shadow:0 2px 5px rgba(0,0,0,0.5);
-}
-.header h1 { color:#ffbe0b; font-size:68px; margin:0; }
-.header h2 { color:#ffffff; font-weight:normal; font-size:40px; margin:10px 0 0 0; }
-.header h3 { color:#ffffff; font-weight:normal; font-size:30px; margin:5px 0 0 0; }
+        #offlineContainer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
 
-.date {
-    background:#1c2541;
-    margin:20px;
-    padding:24px;
-    cursor:pointer;
-    border-radius:5px;
-    font-size:40px;
-    text-align:center;
-}
-.matches {
-    display:none;
-    margin:0 20px 30px 20px;
-    background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
-    border-radius:12px;
-    padding:20px;
-}
-.match {
-    margin:10px 0;
-    padding:24px;
-    border-radius:8px;
-    font-size:36px;
-    font-weight:bold;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-}
-.won { background:#2ecc71; }
-.lost { background:#e74c3c; }
-.pending { background:#808080; }
+        #offlineContainer h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
 
-.highlight-link{
-    display:inline-block;
-    padding:10px 18px;
-    border-radius:12px;
-    background:#ffbe0b;
-    color:black;
-    font-size:24px;
-    cursor:pointer;
-    margin-top:12px;
-}
+        #offlineContainer p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
 
-/* FLOATS */
-.floating-left {
-    position:fixed;
-    bottom:20px;
-    left:20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:9999;
-}
-.floating-left a {
-    text-decoration:none;
-    padding:14px 18px;
-    border-radius:50px;
-    color:white;
-    font-size:20px;
-    font-weight:bold;
-}
-.whatsapp-btn { background:#25D366; }
-.telegram-btn { background:#0088cc; }
-.email-btn { background:#ff9800; }
-.about-btn { background:#ffbe0b; color:black; }
-.support-float { background:#ff9800; }
+        #offlineContainer button {
+            padding: 12px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #FFD700;
+            border: none;
+            border-radius: 8px;
+            color: #0B0C3E;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            display: none;
+        }
 
-.floating-right {
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:9999;
-    align-items:center;
-}
-.vip-float {
-    background:#FFD700;
-    color:black;
-    font-size:20px;
-    font-weight:bold;
-    padding:16px 25px;
-    border-radius:50px;
-    text-decoration:none;
-    animation:pulse 1.5s infinite;
-    box-shadow:0 0 15px #00ff00;
-}
-.privacy-btn {
-    background:#ffbe0b;
-    color:black;
-    padding:14px 18px;
-    border-radius:50px;
-    font-size:20px;
-    text-align:center;
-    width:200px;
-}
+        #offlineContainer button:hover {
+            background: #B8860B;
+            color: #fff;
+        }
 
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
-    70% { transform: scale(1.08); box-shadow: 0 0 20px #00ff00; }
-    100% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
-}
+        /* HAPA HAPA ZAIDI ZA INDEX ZAKO ... */
 
-/* VIDEO POPUP */
-#videoPopup{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:transparent;
-    z-index:20000;
-    pointer-events:none;
-}
-#videoPopupContent{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:90%;
-    max-width:900px;
-    cursor:move;
-    pointer-events:auto;
-}
-#videoFrame{width:100%;height:500px;border:none;}
-.video-close-big{
-    position:absolute;
-    top:-20px;
-    right:-20px;
-    background:red;
-    color:white;
-    border:none;
-    font-size:40px;
-    border-radius:50%;
-    width:60px;
-    height:60px;
-    cursor:pointer;
-}
-</style>
+        /* LOADING */
+        #ngoLoading{
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            font-size:120px;
+            color:#ffbe0b;
+            font-weight:bold;
+            z-index:99999;
+        }
+
+        .top-bar {
+            display:flex;
+            justify-content:space-between;
+            padding:5px 20px;
+            font-size:28px;
+            color:#ffbe0b;
+            background:#1c2541;
+        }
+
+        .header {
+            position:sticky;
+            top:0;
+            background:#0b132b;
+            z-index:100;
+            text-align:center;
+            padding:30px 10px;
+            border-bottom:2px solid #ffbe0b;
+            box-shadow:0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            color:#ffbe0b;
+            font-size:68px;
+            margin:0;
+        }
+
+        .header h2 {
+            color:#ffffff;
+            font-weight:normal;
+            font-size:40px;
+            margin:10px 0 0 0;
+        }
+
+        .header h3 {
+            color:#ffffff;
+            font-weight:normal;
+            font-size:30px;
+            margin:5px 0 0 0;
+        }
+
+        .date {
+            background:#1c2541;
+            margin:20px;
+            padding:24px;
+            cursor:pointer;
+            border-radius:5px;
+            font-size:40px;
+            text-align:center;
+        }
+
+        .matches {
+            display:none;
+            margin:0 20px 30px 20px;
+            background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
+            border-radius:12px;
+            padding:20px;
+        }
+
+        .match {
+            margin:10px 0;
+            padding:24px;
+            border-radius:8px;
+            font-size:36px;
+            font-weight:bold;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            text-align:center;
+        }
+
+        .won { background:#2ecc71; }
+        .lost { background:#e74c3c; }
+        .pending { background:#808080; }
+
+        .highlight-link{
+            display:inline-block;
+            padding:10px 18px;
+            border-radius:12px;
+            background:#ffbe0b;
+            color:black;
+            font-size:24px;
+            cursor:pointer;
+            margin-top:12px;
+        }
+
+        /* FLOATS */
+        .floating-left {
+            position:fixed;
+            bottom:20px;
+            left:20px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            z-index:9999;
+        }
+
+        .floating-left a {
+            text-decoration:none;
+            padding:14px 18px;
+            border-radius:50px;
+            color:white;
+            font-size:20px;
+            font-weight:bold;
+        }
+
+        .whatsapp-btn { background:#25D366; }
+        .telegram-btn { background:#0088cc; }
+        .email-btn { background:#ff9800; }
+        .about-btn { background:#ffbe0b; color:black; }
+        .support-float { background:#ff9800; }
+
+        .floating-right {
+            position:fixed;
+            bottom:20px;
+            right:20px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            z-index:9999;
+            align-items:center;
+        }
+
+        .vip-float {
+            background:#FFD700;
+            color:black;
+            font-size:20px;
+            font-weight:bold;
+            padding:16px 25px;
+            border-radius:50px;
+            text-decoration:none;
+            animation:pulse 1.5s infinite;
+            box-shadow:0 0 15px #00ff00;
+        }
+
+        .privacy-btn {
+            background:#ffbe0b;
+            color:black;
+            padding:14px 18px;
+            border-radius:50px;
+            font-size:20px;
+            text-align:center;
+            width:200px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
+            70% { transform: scale(1.08); box-shadow: 0 0 20px #00ff00; }
+            100% { transform: scale(1); box-shadow: 0 0 15px #00ff00; }
+        }
+
+        /* VIDEO POPUP */
+        #videoPopup{
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:transparent;
+            z-index:20000;
+            pointer-events:none;
+        }
+
+        #videoPopupContent{
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            width:90%;
+            max-width:900px;
+            cursor:move;
+            pointer-events:auto;
+        }
+
+        #videoFrame{width:100%;height:500px;border:none;}
+
+        .video-close-big{
+            position:absolute;
+            top:-20px;
+            right:-20px;
+            background:red;
+            color:white;
+            border:none;
+            font-size:40px;
+            border-radius:50%;
+            width:60px;
+            height:60px;
+            cursor:pointer;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container" id="offlineContainer">
-    <h1>Welcome to N.G.O Football Analysis</h1>
-    <p id="statusMessage">Checking your connection...</p>
-    <button id="reloadBtn" onclick="reloadPage()">🔄 Reload</button>
-</div>
-<div id="ngoLoading">N.G.O Loading...</div>
+    <div class="container" id="offlineContainer">
+        <h1>Welcome to N.G.O Football Analysis</h1>
+        <p id="statusMessage">Checking your connection...</p>
+        <button id="reloadBtn" onclick="reloadPage()">🔄 Reload</button>
+    </div>
 
-<div class="top-bar">
-    <div>Follow, N.G.O Football Analysis</div>
-    <div>V.I.P Tips, Available</div>
-</div>
+    <div id="ngoLoading">N.G.O Loading...</div>
+
+    <div class="top-bar">
+        <div>Follow, N.G.O Football Analysis</div>
+        <div>V.I.P Tips, Available</div>
+    </div>
+</body>
+</html>
 
 <div class="header">
     <h1>N.G.O Football Analysis</h1>
@@ -283,6 +320,7 @@ body {
         <iframe id="videoFrame" allow="autoplay; fullscreen" allowfullscreen></iframe>
     </div>
 </div>
+
 <script>
 function reloadPage() {
     location.reload();
@@ -291,17 +329,20 @@ function reloadPage() {
 function showSplashOnline() {
     const status = document.getElementById('statusMessage');
     const splash = document.getElementById('offlineContainer');
+
     status.innerText = "You are online. Redirecting...";
+
     setTimeout(() => {
-        splash.classList.add('hidden'); // fade out splash
-        document.getElementById('ngoLoading').style.display = "none"; // hide loading
-        document.getElementById('content').style.display = "block"; // show main content
-    }, 2000); // 2 seconds
+        splash.classList.add('hidden');
+        document.getElementById('ngoLoading').style.display = "none";
+        document.getElementById('content').style.display = "block";
+    }, 2000);
 }
 
 function showSplashOffline() {
     const status = document.getElementById('statusMessage');
     const reloadBtn = document.getElementById('reloadBtn');
+
     status.innerHTML = "You are currently offline.<br>Please check your internet connection and tap reload to continue.";
     reloadBtn.style.display = "inline-block";
 }
@@ -314,14 +355,13 @@ function checkConnection() {
     }
 }
 
-// Hide main content initially
 document.getElementById('content').style.display = "none";
 
-// Run on page load
 window.addEventListener('load', checkConnection);
 window.addEventListener('online', checkConnection);
 window.addEventListener('offline', checkConnection);
 </script>
+
 <script>
 const URL="https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
 
@@ -346,6 +386,7 @@ fetch(URL)
     document.getElementById("ngoLoading").style.display="none";
 
     const grouped={};
+
     data.FREE.forEach(row=>{
         if(!row.Date) return;
         if(!grouped[row.Date]) grouped[row.Date]=[];
@@ -353,11 +394,16 @@ fetch(URL)
     });
 
     const container=document.getElementById("content");
+
     Object.keys(grouped).reverse().forEach((date,i)=>{
         const d=document.createElement("div");
         d.className="date";
         d.textContent=formatDate(date);
-        d.onclick=()=>{const m=document.getElementById("m"+i); m.style.display=m.style.display==="block"?"none":"block";};
+
+        d.onclick=()=>{
+            const m=document.getElementById("m"+i);
+            m.style.display=m.style.display==="block"?"none":"block";
+        };
 
         const matches=document.createElement("div");
         matches.className="matches";
@@ -365,8 +411,14 @@ fetch(URL)
 
         grouped[date].forEach(r=>{
             const div=document.createElement("div");
-            let statusClass=r.Status==="WON"?"won":r.Status==="LOST"?"lost":"pending";
+
+            let statusClass=
+                r.Status==="WON"?"won":
+                r.Status==="LOST"?"lost":
+                "pending";
+
             div.className="match "+statusClass;
+
             div.innerHTML=`${formatTime(r.Time)} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
 
             if(r.Highlight){
@@ -387,21 +439,30 @@ fetch(URL)
 
 function openHighlight(url){
     let id="";
-    if(url.includes("youtu.be/")) id=url.split("youtu.be/")[1].split(/[?&]/)[0];
-    else if(url.includes("shorts/")) id=url.split("shorts/")[1].split(/[?&]/)[0];
-    else if(url.includes("watch?v=")) id=url.split("v=")[1].split("&")[0];
-    else if(url.includes("embed/")) id=url.split("embed/")[1].split(/[?&]/)[0];
+
+    if(url.includes("youtu.be/"))
+        id=url.split("youtu.be/")[1].split(/[?&]/)[0];
+    else if(url.includes("shorts/"))
+        id=url.split("shorts/")[1].split(/[?&]/)[0];
+    else if(url.includes("watch?v="))
+        id=url.split("v=")[1].split("&")[0];
+    else if(url.includes("embed/"))
+        id=url.split("embed/")[1].split(/[?&]/)[0];
+
     document.getElementById("videoFrame").src="https://www.youtube.com/embed/"+id+"?autoplay=1";
     document.getElementById("videoPopup").style.display="block";
 }
+
 function closeVideo(){
     document.getElementById("videoFrame").src="";
     document.getElementById("videoPopup").style.display="none";
 }
 
 /* DRAG VIDEO */
+
 let dragItem=document.getElementById("videoPopupContent");
 let active=false,currentX,currentY,initialX,initialY,xOffset=0,yOffset=0;
+
 dragItem.addEventListener("touchstart",dragStart);
 dragItem.addEventListener("touchend",dragEnd);
 dragItem.addEventListener("touchmove",drag);
@@ -414,11 +475,13 @@ function dragStart(e){
     initialY=(e.touches?e.touches[0].clientY:e.clientY)-yOffset;
     active=true;
 }
+
 function dragEnd(){
     initialX=currentX;
     initialY=currentY;
     active=false;
 }
+
 function drag(e){
     if(active){
         e.preventDefault();
@@ -430,112 +493,128 @@ function drag(e){
     }
 }
 </script>
+
 <!-- ================== DOWNLOAD APP BUTTON GOLD ================== -->
+
 <div id="downloadAppBtn" style="width:220px; height:60px; font-size:22px;">
-  <a href="https://github.com/nelvinogamingoncloud/ngo-football-analysis/releases/download/v1.0.0/ngo-football-analysis.apk" onclick="vibratePhone()">
-    📲 DOWNLOAD APP
-  </a>
+    <a href="https://github.com/nelvinogamingoncloud/ngo-football-analysis/releases/download/v1.0.0/ngo-football-analysis.apk" onclick="vibratePhone()">
+        📲 DOWNLOAD APP
+    </a>
 </div>
 
 <style>
 #downloadAppBtn{
-  position:fixed;  /* Fixed ili ibaki pale pale kwenye screen hata ukiscroll */
-  top:420px;       /* Badilisha hii ili iwe kwenye portion A unayotaka */
-  left:50px;       /* Badilisha hii kulingana na position ya box A */
-  z-index:9999;
-  cursor:move;
-  animation:pulseGlow 1.6s infinite;
-  border-radius:12px;
-  box-shadow:0 0 15px gold;
+    position:fixed;
+    top:420px;
+    left:50px;
+    z-index:9999;
+    cursor:move;
+    animation:pulseGlow 1.6s infinite;
+    border-radius:12px;
+    box-shadow:0 0 15px gold;
 }
 
 #downloadAppBtn a{
-  background:linear-gradient(45deg,#FFD700,#FFA500);
-  color:black;
-  padding:16px 24px;
-  border-radius:12px;
-  text-decoration:none;
-  font-weight:bold;
-  font-size:22px;
-  display:block;
-  text-align:center;
-  box-shadow:0 0 15px gold;
+    background:linear-gradient(45deg,#FFD700,#FFA500);
+    color:black;
+    padding:16px 24px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:22px;
+    display:block;
+    text-align:center;
+    box-shadow:0 0 15px gold;
 }
 
 @keyframes pulseGlow{
-  0%{transform:scale(1); box-shadow:0 0 10px gold;}
-  50%{transform:scale(1.12); box-shadow:0 0 25px gold;}
-  100%{transform:scale(1); box-shadow:0 0 10px gold;}
+    0%{transform:scale(1); box-shadow:0 0 10px gold;}
+    50%{transform:scale(1.12); box-shadow:0 0 25px gold;}
+    100%{transform:scale(1); box-shadow:0 0 10px gold;}
 }
 </style>
 
 <script>
+
 // Vibration kidogo kwenye simu
 function vibratePhone(){
-  if(navigator.vibrate){
-    navigator.vibrate(120);
-  }
+    if(navigator.vibrate){
+        navigator.vibrate(120);
+    }
 }
 
 // Ficha button ndani ya app
 var ua = navigator.userAgent || navigator.vendor;
+
 if (ua.includes("wv") || ua.includes("WebView")){
-  document.getElementById("downloadAppBtn").style.display="none";
+    document.getElementById("downloadAppBtn").style.display="none";
 }
 
 // Fanya button iwe movable
 dragElement(document.getElementById("downloadAppBtn"));
 
 function dragElement(elmnt){
-  var bPos1=0,bPos2=0,bPos3=0,bPos4=0;
 
-  elmnt.onmousedown=dragMouseDown;
-  elmnt.ontouchstart=dragTouchStart;
+    var bPos1=0,bPos2=0,bPos3=0,bPos4=0;
 
-  function dragMouseDown(e){
-    e=e||window.event;
-    e.preventDefault();
-    bPos3=e.clientX;
-    bPos4=e.clientY;
-    document.onmouseup=closeDragElement;
-    document.onmousemove=elementDrag;
-  }
+    elmnt.onmousedown=dragMouseDown;
+    elmnt.ontouchstart=dragTouchStart;
 
-  function dragTouchStart(e){
-    var touch=e.touches[0];
-    bPos3=touch.clientX;
-    bPos4=touch.clientY;
-    document.ontouchend=closeDragElement;
-    document.ontouchmove=elementDragTouch;
-  }
+    function dragMouseDown(e){
+        e=e||window.event;
+        e.preventDefault();
 
-  function elementDrag(e){
-    e=e||window.event;
-    e.preventDefault();
-    bPos1=bPos3-e.clientX;
-    bPos2=bPos4-e.clientY;
-    bPos3=e.clientX;
-    bPos4=e.clientY;
-    elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
-    elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
-  }
+        bPos3=e.clientX;
+        bPos4=e.clientY;
 
-  function elementDragTouch(e){
-    var touch=e.touches[0];
-    bPos1=bPos3-touch.clientX;
-    bPos2=bPos4-touch.clientY;
-    bPos3=touch.clientX;
-    bPos4=touch.clientY;
-    elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
-    elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
-  }
+        document.onmouseup=closeDragElement;
+        document.onmousemove=elementDrag;
+    }
 
-  function closeDragElement(){
-    document.onmouseup=null;
-    document.onmousemove=null;
-    document.ontouchmove=null;
-  }
+    function dragTouchStart(e){
+        var touch=e.touches[0];
+
+        bPos3=touch.clientX;
+        bPos4=touch.clientY;
+
+        document.ontouchend=closeDragElement;
+        document.ontouchmove=elementDragTouch;
+    }
+
+    function elementDrag(e){
+        e=e||window.event;
+        e.preventDefault();
+
+        bPos1=bPos3-e.clientX;
+        bPos2=bPos4-e.clientY;
+
+        bPos3=e.clientX;
+        bPos4=e.clientY;
+
+        elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
+        elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
+    }
+
+    function elementDragTouch(e){
+        var touch=e.touches[0];
+
+        bPos1=bPos3-touch.clientX;
+        bPos2=bPos4-touch.clientY;
+
+        bPos3=touch.clientX;
+        bPos4=touch.clientY;
+
+        elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
+        elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
+    }
+
+    function closeDragElement(){
+        document.onmouseup=null;
+        document.onmousemove=null;
+        document.ontouchmove=null;
+    }
 }
 </script>
+
 </body>
 </html>
