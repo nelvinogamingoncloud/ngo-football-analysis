@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N.G.O Football Analysis</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0B0C3E; /* Dark blue background */
+    color: #FFD700; /* Gold text */
+    text-align: center;
+  }
+
+  .container {
+    max-width: 90%;
+  }
+
+  h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  }
+
+  p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+
+  button {
+    padding: 12px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    background: #FFD700;
+    border: none;
+    border-radius: 8px;
+    color: #0B0C3E;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+  }
+
+  button:hover {
+    background: #B8860B;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="offlineContainer">
+  <h1>Welcome to N.G.O Football Analysis</h1>
+  <p id="statusMessage">Checking your connection...</p>
+  <button id="reloadBtn" onclick="reloadPage()" style="display:none;">🔄 Reload</button>
+</div>
+
+<script>
+  function reloadPage() {
+    location.reload();
+  }
+
+  function checkConnection() {
+    if (navigator.onLine) {
+      // Online → redirect to main index.html after 2 seconds
+      document.getElementById('statusMessage').innerText = "You are online. Redirecting...";
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2000);
+    } else {
+      // Offline → show message
+      document.getElementById('statusMessage').innerHTML = "You are currently offline.<br>Please check your internet connection and tap reload to continue.";
+      document.getElementById('reloadBtn').style.display = "inline-block";
+    }
+  }
+
+  // Check on page load
+  window.addEventListener('load', checkConnection);
+
+  // Listen for online/offline changes
+  window.addEventListener('online', checkConnection);
+  window.addEventListener('offline', checkConnection);
+</script>
+
+</body>
+</html>
