@@ -342,6 +342,112 @@ function drag(e){
     }
 }
 </script>
+<!-- ================== DOWNLOAD APP BUTTON GOLD ================== -->
+<div id="downloadAppBtn" style="width:220px; height:60px; font-size:22px;">
+  <a href="ngo-football-analysis.apk" download onclick="vibratePhone()">
+📲 DOWNLOAD APP
+</a>
+</div>
 
+<style>
+#downloadAppBtn{
+  position:fixed;  /* Fixed ili ibaki pale pale kwenye screen hata ukiscroll */
+  top:420px;       /* Badilisha hii ili iwe kwenye portion A unayotaka */
+  left:50px;       /* Badilisha hii kulingana na position ya box A */
+  z-index:9999;
+  cursor:move;
+  animation:pulseGlow 1.6s infinite;
+  border-radius:12px;
+  box-shadow:0 0 15px gold;
+}
+
+#downloadAppBtn a{
+  background:linear-gradient(45deg,#FFD700,#FFA500);
+  color:black;
+  padding:16px 24px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:22px;
+  display:block;
+  text-align:center;
+  box-shadow:0 0 15px gold;
+}
+
+@keyframes pulseGlow{
+  0%{transform:scale(1); box-shadow:0 0 10px gold;}
+  50%{transform:scale(1.12); box-shadow:0 0 25px gold;}
+  100%{transform:scale(1); box-shadow:0 0 10px gold;}
+}
+</style>
+
+<script>
+// Vibration kidogo kwenye simu
+function vibratePhone(){
+  if(navigator.vibrate){
+    navigator.vibrate(120);
+  }
+}
+
+// Ficha button ndani ya app
+var ua = navigator.userAgent || navigator.vendor;
+if (ua.includes("wv") || ua.includes("WebView")){
+  document.getElementById("downloadAppBtn").style.display="none";
+}
+
+// Fanya button iwe movable
+dragElement(document.getElementById("downloadAppBtn"));
+
+function dragElement(elmnt){
+  var bPos1=0,bPos2=0,bPos3=0,bPos4=0;
+
+  elmnt.onmousedown=dragMouseDown;
+  elmnt.ontouchstart=dragTouchStart;
+
+  function dragMouseDown(e){
+    e=e||window.event;
+    e.preventDefault();
+    bPos3=e.clientX;
+    bPos4=e.clientY;
+    document.onmouseup=closeDragElement;
+    document.onmousemove=elementDrag;
+  }
+
+  function dragTouchStart(e){
+    var touch=e.touches[0];
+    bPos3=touch.clientX;
+    bPos4=touch.clientY;
+    document.ontouchend=closeDragElement;
+    document.ontouchmove=elementDragTouch;
+  }
+
+  function elementDrag(e){
+    e=e||window.event;
+    e.preventDefault();
+    bPos1=bPos3-e.clientX;
+    bPos2=bPos4-e.clientY;
+    bPos3=e.clientX;
+    bPos4=e.clientY;
+    elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
+    elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
+  }
+
+  function elementDragTouch(e){
+    var touch=e.touches[0];
+    bPos1=bPos3-touch.clientX;
+    bPos2=bPos4-touch.clientY;
+    bPos3=touch.clientX;
+    bPos4=touch.clientY;
+    elmnt.style.top=(elmnt.offsetTop-bPos2)+"px";
+    elmnt.style.left=(elmnt.offsetLeft-bPos1)+"px";
+  }
+
+  function closeDragElement(){
+    document.onmouseup=null;
+    document.onmousemove=null;
+    document.ontouchmove=null;
+  }
+}
+</script>
 </body>
 </html>
