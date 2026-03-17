@@ -72,8 +72,6 @@
             color: #fff;
         }
 
-        /* HAPA HAPA ZAIDI ZA INDEX ZAKO ... */
-
         /* LOADING */
         #ngoLoading{
             position:fixed;
@@ -85,6 +83,225 @@
             font-weight:bold;
             z-index:99999;
         }
+
+        .header {
+            position:sticky;
+            top:0;
+            background:#0b132b;
+            z-index:100;
+            text-align:center;
+            padding:30px 10px;
+            border-bottom:2px solid #ffbe0b;
+            box-shadow:0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .header h1 {
+            color:#ffbe0b;
+            font-size:68px;
+            margin:0;
+        }
+
+        .header h2 {
+            color:#ffffff;
+            font-weight:normal;
+            font-size:40px;
+            margin:10px 0 0 0;
+        }
+
+        .header h3 {
+            color:#ffffff;
+            font-weight:normal;
+            font-size:30px;
+            margin:5px 0 0 0;
+        }
+
+        .date {
+            background:#1c2541;
+            margin:20px;
+            padding:24px;
+            cursor:pointer;
+            border-radius:5px;
+            font-size:40px;
+            text-align:center;
+        }
+
+        .matches {
+            display:none;
+            margin:0 20px 30px 20px;
+            background:linear-gradient(135deg,#6a11cb 0%,#2575fc 100%);
+            border-radius:12px;
+            padding:20px;
+        }
+
+        .match {
+            margin:10px 0;
+            padding:24px;
+            border-radius:8px;
+            font-size:36px;
+            font-weight:bold;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            text-align:center;
+        }
+
+        .highlight-link {
+            margin-top:10px;
+            padding:6px 12px;
+            background:#FFD700;
+            color:#0B0C3E;
+            font-weight:bold;
+            cursor:pointer;
+            border-radius:6px;
+        }
+
+        .highlight-link:hover {
+            background:#B8860B;
+            color:#fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="offlineContainer">
+        <h1>N.G.O Football Analysis</h1>
+        <p id="statusMessage">Checking connection...</p>
+        <button id="reloadBtn" onclick="reloadPage()">Reload</button>
+    </div>
+
+    <div id="ngoLoading">N.G.O Loading...</div>
+
+    <div class="header">
+        <h1>N.G.O Football Analysis</h1>
+        <h2>📅 Predictions by Date</h2>
+        <h3>Choose the date to view Prediction or History</h3>
+    </div>
+
+    <div id="content"></div>
+
+    <script>
+        const URL="https://script.google.com/macros/s/AKfycbx3rIDGkkPMF4jyLq55A2A7nnZ6VL5Lm7wccG7kqbBDkE1WwTyDrBxxU-123CN9-QILMA/exec";
+
+        function formatDate(iso){
+            const d = new Date(iso);
+            const day = String(d.getDate()).padStart(2,'0');
+            const month = String(d.getMonth()+1).padStart(2,'0');
+            const year = String(d.getFullYear());
+            return `${day}-${month}-${year}`;
+        }
+
+        function formatTime(timeString){
+            const t = new Date(timeString);
+            const hours = String(t.getHours()).padStart(2,'0');
+            const minutes = String(t.getMinutes()).padStart(2,'0');
+            return `${hours}:${minutes}`;
+        }
+
+        document.getElementById('content').style.display = "none";
+
+        function reloadPage() {
+            location.reload();
+        }
+
+        function loadData() {
+            fetch(URL)
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById("content");
+                const grouped = {};
+
+                data.FREE.forEach(row => {
+                    if(!row.Date) return;
+                    if(!grouped[row.Date]) grouped[row.Date] = [];
+                    grouped[row.Date].push(row);
+                });
+
+                Object.keys(grouped).reverse().forEach((date,i) => {
+                    const d = document.createElement("div");
+                    d.className = "date";
+                    d.textContent = formatDate(date);
+                    d.onclick = () => {
+                        const m = document.getElementById("m"+i);
+                        m.style.display = m.style.display === "block" ? "none" : "block";
+                    };
+
+                    const matches = document.createElement("div");
+                    matches.className = "matches";
+                    matches.id = "m"+i;
+
+                    grouped[date].forEach(r => {
+                        const div = document.createElement("div");
+                        let statusClass = r.Status==="WON"?"won":r.Status==="LOST"?"lost":"pending";
+                        div.className = "match "+statusClass;
+                        div.innerHTML = `${formatTime(r.Time)} ${r.Home} vs ${r.Away}<br>Pick: ${r.Pick}<br>Status: ${r.Status}`;
+
+                        if(r.Highlight){
+                            const h = document.createElement("div");
+                            h.className="highlight-link";
+                            h.innerHTML = "⏯ MATCH HIGHLIGHT";
+                            h.onclick = () => openHighlight(r.Highlight);
+                            div.appendChild(h);
+                        }
+
+                        matches.appendChild(div);
+                    });
+
+                    container.appendChild(d);
+                    container.appendChild(matches);
+                });
+
+                // ONDOA splash na loading baada content ipo
+                document.getElementById('offlineContainer').classList.add('hidden');
+                document.getElementById('ngoLoading').style.display = "none";
+                container.style.display = "block";
+            })
+            .catch(err => {
+                const status = document.getElementById('statusMessage');
+                const reloadBtn = document.getElementById('reloadBtn');
+                status.innerHTML = "You are offline or there was an error.<br>Please check your connection.";
+                reloadBtn.style.display = "inline-block";
+            });
+        }
+
+        function openHighlight(url){
+            let id="";
+            if(url.includes("youtu.be/")) id=url.split("youtu.be/")[1].split(/[?&]/)[0];
+            else if(url.includes("shorts/")) id=url.split("shorts/")[1].split(/[?&]/)[0];
+            else if(url.includes("watch?v=")) id=url.split("v=")[1].split("&")[0];
+            else if(url.includes("embed/")) id=url.split("embed/")[1].split(/[?&]/)[0];
+
+            const videoFrame = document.createElement("iframe");
+            videoFrame.src="https://www.youtube.com/embed/"+id+"?autoplay=1";
+            videoFrame.allow="autoplay; fullscreen";
+            videoFrame.allowFullscreen = true;
+
+            const popup = document.createElement("div");
+            popup.style.position="fixed";
+            popup.style.top="0";
+            popup.style.left="0";
+            popup.style.width="100%";
+            popup.style.height="100%";
+            popup.style.background="rgba(0,0,0,0.85)";
+            popup.style.zIndex="999999";
+            popup.style.display="flex";
+            popup.style.alignItems="center";
+            popup.style.justifyContent="center";
+            popup.onclick = () => popup.remove();
+
+            popup.appendChild(videoFrame);
+            document.body.appendChild(popup);
+        }
+
+        window.addEventListener('load', loadData);
+        window.addEventListener('online', loadData);
+        window.addEventListener('offline', () => {
+            const status = document.getElementById('statusMessage');
+            const reloadBtn = document.getElementById('reloadBtn');
+            status.innerHTML = "You are offline.<br>Please check your internet connection.";
+            reloadBtn.style.display = "inline-block";
+        });
+    </script>
+</body>
+</html>
 
         .top-bar {
             display:flex;
